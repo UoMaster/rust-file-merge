@@ -1,0 +1,9 @@
+---
+source: src/utils/path.rs
+assertion_line: 138
+expression: core_module_names
+---
+[
+    "/Users/wuhongbin/Code/rust-file-merge/demo/src/core/site",
+    "/Users/wuhongbin/Code/rust-file-merge/demo/src/core/report",
+]

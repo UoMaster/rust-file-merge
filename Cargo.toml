@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+notify = "8.2.0"
+pretty_assertions = "1.4"
+insta = "1.34"
