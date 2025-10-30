@@ -8,5 +8,6 @@ pub fn is_macos() -> bool {
 }
 
 pub fn get_web_ip() -> String {
+  // 临时 mock 的 web ip
   String::from("buaa")
 }

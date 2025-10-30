@@ -1,4 +1,4 @@
-use crate::utils::os::{is_macos};
+
 use std::{env, fs, path::PathBuf};
 
 mod path_matchers;
@@ -14,7 +14,7 @@ pub fn get_project_root_path() -> PathBuf {
 }
 
 pub fn get_split_key() -> &'static str {
-    if is_macos() { "/" } else { "\\" }
+    std::path::MAIN_SEPARATOR_STR
 }
 
 pub fn get_core_module_names() -> Option<Vec<String>> {
@@ -55,50 +55,19 @@ pub enum PathFlag {
 
 #[derive(Debug)]
 pub struct FilePath {
-    pre_path: String,
-    os_path: String,
-    split_path: Vec<String>,
+    os_path: PathBuf,
     path_flag: PathFlag,
-    merge_path: Option<String>,
+    merge_path: Option<PathBuf>,
+    env_path: Option<PathBuf>,
 }
 
-trait PathTrait {
-    fn get_pre_path(&self) -> String;
-    fn get_os_path(&self) -> String;
-    fn get_split_path(&self) -> Vec<String>;
-}
-
-impl PathTrait for FilePath {
-    fn get_pre_path(&self) -> String {
-        self.pre_path.clone()
-    }
-    fn get_os_path(&self) -> String {
-        self.os_path.clone()
-    }
-    fn get_split_path(&self) -> Vec<String> {
-        self.split_path.clone()
-    }
-}
-
-pub fn new_path(path: String) -> FilePath {
-    let split_key = get_split_key();
-    let os_path = path.replace(split_key, "/");
-
-    let mut file_path = FilePath {
-        pre_path: path.clone(),
-        os_path,
-        split_path: path.split(split_key).map(|s| s.to_string()).collect(),
-        path_flag: PathFlag::NotFound,
-        merge_path: None,
-    };
-
-    let path_result = path_matchers::match_handle_path(path);
-    file_path = FilePath {
+pub fn new_path(path: PathBuf) -> FilePath {
+    let path_result = path_matchers::match_handle_path(&path);
+    
+    FilePath {
+        os_path: path,
         path_flag: path_result.path_flag,
         merge_path: path_result.merge_path,
-        ..file_path
-    };
-
-
-    file_path
+        env_path: None,
+    }
 }
