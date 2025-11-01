@@ -1,6 +1,12 @@
-use std::path::{Component, Path, PathBuf};
+use std::path::{Component, PathBuf};
 use crate::utils::path::{get_project_root_path, PathFlag};
 use crate::utils::path::path_matchers::MatchResult;
+use crate::utils::os::get_web_ip;
+/**
+ * 本文件是用作于匹配 src 下面的功能 目录/文件， 转化为 merge 路径和 env 路径
+ * 例如：src/components/Button.vue 转化为 merge/components/Button.vue 和 env/{webid}/components/Button.vue
+ */
+
 
 const FUNCTION_DIR_NAMES: &[&str] = &[
     "components",
@@ -44,11 +50,19 @@ pub fn match_src_function_dir(path: &PathBuf) -> Option<MatchResult> {
     let merge_path = src_path
         .join("merge")
         .join(function_dir)
-        .join(remaining_path);
+        .join(&remaining_path);
+    
+    // 构建 env 路径
+    let env_path = src_path
+        .join("env")
+        .join(get_web_ip())
+        .join(function_dir)
+        .join(&remaining_path);
     
     Some(MatchResult {
         path_flag: PathFlag::CoreFunction,
         merge_path: Some(merge_path),
+        env_path: Some(env_path),
     })
 }
 

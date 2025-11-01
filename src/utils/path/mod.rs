@@ -68,6 +68,19 @@ pub fn new_path(path: PathBuf) -> FilePath {
         os_path: path,
         path_flag: path_result.path_flag,
         merge_path: path_result.merge_path,
-        env_path: None,
+        env_path: path_result.env_path,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_path() {
+        let path = PathBuf::from("/Users/wuhongbin/Code/rust-file-merge/demo/src/components/z/Button.vue");
+        let file_path = new_path(path);
+        println!("{:?}", file_path);
+
     }
 }
