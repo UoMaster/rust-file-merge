@@ -1,5 +1,6 @@
 
 use std::{env, fs, path::PathBuf};
+use serde::Serialize;
 
 mod path_matchers;
 
@@ -44,21 +45,38 @@ pub fn str_path_is_dir(path: String) -> bool {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, PartialEq, Eq)]
 pub enum PathFlag {
+    /// 根目录下的功能 例如 [components, hooks, pages, ...]
     RootFunction,
+    /// src/core/{模块名称} 下的功能 例如：同上
     CoreFunction,
+    /// env/{webid} 根目录下的功能 例如 [components, hooks, ...]
     EnvRootFunction,
+    /// env/{webid}/core/{模块名称} 下的功能 例如：同上
     EnvCoreFunction,
     NotFound,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct FilePath {
+    /// 原始操作系统路径
     os_path: PathBuf,
+
+    /// 判断 原始路径的 类型
     path_flag: PathFlag,
+
+    /// 对应 merge 的 路径
+    /// 所有 PathFlag 类型都应该有值
     merge_path: Option<PathBuf>,
+
+    /// 对应 env 的 路径
+    /// 只有 RootFunction 和 CoreFunction 类型应该有值
     env_path: Option<PathBuf>,
+
+    /// env 路径的反转路径
+    /// 只有 EnvRootFunction 和 EnvCoreFunction 类型应该有值
+    env_reverse_path: Option<PathBuf>,
 }
 
 pub fn new_path(path: PathBuf) -> FilePath {
@@ -69,18 +87,7 @@ pub fn new_path(path: PathBuf) -> FilePath {
         path_flag: path_result.path_flag,
         merge_path: path_result.merge_path,
         env_path: path_result.env_path,
+        env_reverse_path: None,
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_new_path() {
-        let path = PathBuf::from("/Users/wuhongbin/Code/rust-file-merge/demo/src/components/z/Button.vue");
-        let file_path = new_path(path);
-        println!("{:?}", file_path);
-
-    }
-}
